@@ -16,7 +16,7 @@ function App() {
               </div>
             </div>
             <div className="text-xs bg-emerald-900/30 text-emerald-300 px-3 py-1 rounded-full border border-emerald-700">
-              99.96% Accuracy
+              99.98% Accuracy
             </div>
           </div>
         </div>

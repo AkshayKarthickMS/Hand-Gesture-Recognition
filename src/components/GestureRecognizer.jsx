@@ -24,6 +24,7 @@ export default function GestureRecognizer() {
   const [isModelLoaded, setIsModelLoaded] = useState(false)
   const [error, setError] = useState(null)
   const [model, setModel] = useState(null)
+  const modelRef = useRef(null)
   const [prediction, setPrediction] = useState(null)
   const [stream, setStream] = useState(null)
   const [cameraPermission, setCameraPermission] = useState(null)
@@ -33,13 +34,10 @@ export default function GestureRecognizer() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // Load TensorFlow.js with a fallback model
         console.log('Loading TensorFlow.js...')
         await tf.ready()
 
-        // For now, we'll create a mock model to demonstrate the UI
-        // In production, you'd load your converted hand gesture model
-        createMockModel()
+        await loadModel()
 
         // Request camera access
         await requestCameraAccess()
@@ -88,25 +86,21 @@ export default function GestureRecognizer() {
     }
   }
 
-  const createMockModel = () => {
-    // Create a simple mock model for demonstration
-    const mockModel = {
-      predict: (input) => {
-        // Return random predictions for demo
-        const predictions = new Array(10).fill(0).map(() => Math.random())
-        const sum = predictions.reduce((a, b) => a + b, 0)
-        return predictions.map(p => p / sum)
-      }
-    }
+  const loadModel = async () => {
+    const loadedModel = await tf.loadLayersModel('/model/model.json')
+    // Warm up the model so the first real prediction isn't slow
+    const warmup = loadedModel.predict(tf.zeros([1, 150, 150, 1]))
+    warmup.dispose()
 
-    setModel(mockModel)
+    modelRef.current = loadedModel
+    setModel(loadedModel)
     setIsModelLoaded(true)
     setIsLoading(false)
   }
 
   const startPrediction = () => {
     predictionIntervalRef.current = setInterval(async () => {
-      if (videoRef.current && model && canvasRef.current) {
+      if (videoRef.current && modelRef.current && canvasRef.current) {
         try {
           const canvas = canvasRef.current
           const ctx = canvas.getContext('2d')
@@ -125,10 +119,10 @@ export default function GestureRecognizer() {
           }
 
           // Reshape for model input
-          const input = tf.tensor4d([grayscale], [1, 150, 150, 1])
+          const input = tf.tensor4d(grayscale, [1, 150, 150, 1])
 
           // Make prediction
-          const output = model.predict(input)
+          const output = modelRef.current.predict(input)
           const predictions = Array.from(output.dataSync())
 
           // Get top prediction

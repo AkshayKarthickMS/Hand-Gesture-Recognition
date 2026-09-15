@@ -26,7 +26,7 @@ export default function ModelInfo() {
 
         <div>
           <p className="text-slate-400 text-xs mb-1">Val. Accuracy</p>
-          <p className="text-emerald-400 font-semibold">99.96%</p>
+          <p className="text-emerald-400 font-semibold">99.98%</p>
         </div>
 
         <div>

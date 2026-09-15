@@ -44,3 +44,6 @@ __pycache__/
 *.so
 venv/
 env/
+
+# Training run logs
+training/*.log

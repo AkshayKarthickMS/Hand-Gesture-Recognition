@@ -89,7 +89,7 @@ export default function GestureDisplay({ prediction, gestureLabels, isModelLoade
         </div>
         <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3">
           <p className="text-slate-400 text-xs mb-1">Accuracy</p>
-          <p className="text-white font-semibold">99.96%</p>
+          <p className="text-white font-semibold">99.98%</p>
         </div>
       </div>
     </div>
